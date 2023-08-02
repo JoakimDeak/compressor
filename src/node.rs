@@ -2,10 +2,10 @@ use std::cmp::Ordering;
 
 #[derive(Eq, PartialEq, Debug)]
 pub struct Node {
-    byte: Option<u8>,
+    pub byte: Option<u8>,
     pub count: u32,
-    left: Option<Box<Self>>,
-    right: Option<Box<Self>>,
+    pub left: Option<Box<Self>>,
+    pub right: Option<Box<Self>>,
 }
 
 impl Ord for Node {

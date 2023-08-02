@@ -1,20 +1,17 @@
 use bit_vec::BitVec;
 use node::Node;
-use std::cmp::Reverse;
-use std::collections::{BinaryHeap, HashMap};
-use std::fs::File;
-use std::io::{self, prelude::*, BufReader};
-use std::time::Instant;
+use std::{
+    cmp::Reverse,
+    collections::{BinaryHeap, HashMap},
+    fs::File,
+    io::{self, prelude::*, BufReader},
+    time::Instant,
+};
 
 mod node;
-
-// we have read the file
-// gotten all character counts
-// created nodes
-// constructed the tree
+mod serializer;
 
 // next steps
-// create a map for encodings
 // encode the file with a binary representation
 // write that to a file
 
@@ -34,8 +31,9 @@ fn main() {
     let nodes = get_external_nodes_heap("src/input.txt").unwrap();
     let elapsed = start.elapsed();
     let tree = construct_tree(nodes);
-    println!("{:#?}", tree);
-    println!("time for external without newline: {:?}", elapsed);
+    let encodings = get_encodings(&tree);
+    println!("{:#?}", encodings);
+    println!("{:?}", elapsed);
 }
 
 fn get_external_nodes_heap(file_name: &str) -> io::Result<BinaryHeap<Reverse<Node>>> {
@@ -59,4 +57,30 @@ fn construct_tree(mut nodes: BinaryHeap<Reverse<Node>>) -> Node {
         nodes.push(Reverse(internal));
     }
     nodes.pop().unwrap().0
+}
+
+fn get_encodings(node: &Node) -> HashMap<u8, BitVec> {
+    let mut encodings: HashMap<u8, BitVec> = HashMap::new();
+    let encoding = BitVec::new();
+    get_encodings_rec(&node, &mut encodings, encoding);
+    encodings
+}
+
+fn get_encodings_rec(node: &Node, encodings: &mut HashMap<u8, BitVec>, encoding: BitVec) {
+    if node.byte.is_some() {
+        encodings.insert(node.byte.unwrap(), encoding);
+        return;
+    }
+
+    if node.left.is_some() {
+        let mut encoding = encoding.clone();
+        encoding.push(false);
+        get_encodings_rec(node.left.as_ref().unwrap(), encodings, encoding)
+    }
+
+    if node.right.is_some() {
+        let mut encoding = encoding.clone();
+        encoding.push(true);
+        get_encodings_rec(node.right.as_ref().unwrap(), encodings, encoding);
+    }
 }
