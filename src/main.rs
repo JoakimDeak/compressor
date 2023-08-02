@@ -1,9 +1,12 @@
 use bit_vec::BitVec;
-use std::cmp::{Ordering, Reverse};
+use node::Node;
+use std::cmp::Reverse;
 use std::collections::{BinaryHeap, HashMap};
 use std::fs::File;
 use std::io::{self, prelude::*, BufReader};
 use std::time::Instant;
+
+mod node;
 
 // we have read the file
 // gotten all character counts
@@ -11,7 +14,6 @@ use std::time::Instant;
 // constructed the tree
 
 // next steps
-// clean up a bit: move Node to its own file
 // create a map for encodings
 // encode the file with a binary representation
 // write that to a file
@@ -34,45 +36,6 @@ fn main() {
     let tree = construct_tree(nodes);
     println!("{:#?}", tree);
     println!("time for external without newline: {:?}", elapsed);
-}
-
-#[derive(Eq, PartialEq, Debug)]
-struct Node {
-    byte: Option<u8>,
-    count: u32,
-    left: Option<Box<Self>>,
-    right: Option<Box<Self>>,
-}
-
-impl Ord for Node {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.count.cmp(&other.count)
-    }
-}
-
-impl PartialOrd for Node {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Node {
-    fn new_external(byte: u8, count: u32) -> Self {
-        Node {
-            byte: Some(byte),
-            count,
-            left: None,
-            right: None,
-        }
-    }
-    fn new_internal(left: Self, right: Self) -> Self {
-        Node {
-            byte: None,
-            count: left.count + right.count,
-            left: Some(Box::new(left)),
-            right: Some(Box::new(right)),
-        }
-    }
 }
 
 fn get_external_nodes_heap(file_name: &str) -> io::Result<BinaryHeap<Reverse<Node>>> {
