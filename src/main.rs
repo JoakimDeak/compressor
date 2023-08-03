@@ -21,6 +21,7 @@ fn main() {
     let tree = tree::from(nodes);
     println!("before {:#?}", tree);
     let res = tree::serialize(&tree);
+    println!("serialized: {:?}", res);
     let tree = tree::deserialize(res);
     println!("after {:#?}", tree);
     let elapsed = start.elapsed();
