@@ -21,15 +21,16 @@ pub fn compress(input_file: &str, output_file_name: &str) -> io::Result<()> {
     let tree = tree::from(nodes);
     let encodings = get_encodings(&tree);
 
-    let mut encoded = tree::serialize(&tree);
+    let mut encoded = BitVec::new();
 
-    let tree_len: u16 = encoded
+    let mut tree = tree::serialize(&tree);
+    let tree_len: u16 = tree
         .len()
         .try_into()
         .expect("Tree size exceeded limit of u16");
+    encoded.append(&mut tree);
 
     let mut text = encode_file(input_file, &encodings).unwrap();
-
     encoded.append(&mut text);
 
     let padding: u8 = (8 - (encoded.len() % 8))

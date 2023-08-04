@@ -17,7 +17,7 @@ mod tree;
 
 fn main() -> io::Result<()> {
     let start = Instant::now();
-    compressor::compress("src/input.txt", "output")?;
+    compressor::compress("src/small_input.txt", "output")?;
     // read_file()?;
 
     let elapsed = start.elapsed();
@@ -27,5 +27,6 @@ fn main() -> io::Result<()> {
 
 fn read_file() -> io::Result<()> {
     let res = BitVec::from_bytes(&read("output.dat")?);
+    println!("out {:#?}", res);
     Ok(())
 }
